@@ -1,55 +1,69 @@
 # Fast Images Loader
 
-Fast Images Loader — это асинхронный инструмент для загрузки изображений из интернета и сохранения их в указанной папке. Он использует библиотеку `aiohttp` для асинхронных HTTP-запросов и `tqdm` для отображения прогресса загрузки.
+Fast Images Loader is an asynchronous tool for downloading images from the internet and saving them to a specified folder. It uses the `aiohttp` library for asynchronous HTTP requests and `tqdm` for displaying download progress.
 
-## Установка
+## Installation
 
-Вы можете установить пакет с помощью pip:
+You can install the package using pip:
 
 ```bash
 pip install fast_images_loader
 ```
 
-## Использование
+## Usage
 
-Fast Images Loader можно использовать как команду в командной строке:
+Loading via import is supported:
+
+```python
+from fast_images_loader import FastImagesLoader
+
+photo_urls = [
+    "list of urls",
+]
+photo_dir = "test_dir"
+photo_paths = [os.path.join(photo_dir, f"{idx}.jpeg") for idx in range(len(photo_urls))]
+FastImagesLoader().load_photos_to_folder(photo_urls, photo_paths, photo_dir)
+```
+
+Fast Images Loader can be used as a command in the command line:
 
 ```bash
 fast_images_loader [photo_urls] [data_folder]
 ```
 
-- `photo_urls`: Список URL-адресов фотографий для загрузки.
-- `data_folder`: Папка, в которую будут сохранены загруженные фотографии.
+- `photo_urls`: List of photo URLs to download.
+- `data_folder`: Folder where the downloaded photos will be saved.
 
-### Пример
+### Example
 
 ```bash
 fast_images_loader https://example.com/photo1.jpg https://example.com/photo2.jpg ./downloads
 ```
 
-Это загрузит фотографии с указанных URL и сохранит их в папке `./downloads`.
+This will download the photos from the specified URLs and save them in the `./downloads` folder.
 
-## Зависимости
+## Dependencies
 
 - `aiohttp`
 - `tqdm`
 - `loguru`
 - `nest_asyncio`
 
-## Разработка
+## Development
 
-Если вы хотите внести изменения в проект, склонируйте репозиторий и установите зависимости:
+If you want to make changes to the project, clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/ваш-профиль/fast_images_loader.git
+git clone https://github.com/your-profile/fast_images_loader.git
 cd fast_images_loader
 pip install -r requirements.txt
 ```
 
-## Тестирование
+## Testing
 
-Тесты находятся в папке `tests`. Используйте `pytest` для запуска тестов:
+Tests are located in the `tests` folder. Use `pytest` to run the tests:
 
 ```bash
 pytest
 ```
+

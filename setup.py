@@ -2,13 +2,18 @@ from setuptools import setup, find_packages
 
 setup(
     name="fast_images_loader",
-    version="0.1.0",
+    version="0.1.2",
     author="kazanplova",
     author_email="danil.krokodil@mail.ru",
     description="A fast and asynchronous image loader",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/ваш-профиль/fast_images_loader",
+    url="https://github.com/vaskers5/fast_images_loader",
+    project_urls={
+        "Bug Tracker": "https://github.com/vaskers5/fast_images_loader/issues",
+        "Documentation": "https://github.com/vaskers5/fast_images_loader#readme",
+        "Source Code": "https://github.com/vaskers5/fast_images_loader",
+    },
     packages=find_packages(),
     install_requires=[
         "aiohttp",
