@@ -14,7 +14,10 @@ async def test_load_photos(monkeypatch, tmp_path):
     monkeypatch.setattr("fast_images_loader.loader.PhotoLoader.request", mock_request)
 
     # Создаем тестовые данные
-    photo_urls = ["http://example.com/photo1.jpg", "http://example.com/photo2.jpg"]
+    photo_urls = ["https://github.com/vaskers5/fast_images_loader/blob/main/test_images/photo_2024-09-11_13-47-44.jpg?raw=true",
+                   "https://github.com/vaskers5/fast_images_loader/blob/main/test_images/photo_2024-10-01_20-55-34.jpg?raw=true",
+                   "https://github.com/vaskers5/fast_images_loader/blob/main/test_images/photo_2024-10-01_20-55-35.jpg?raw=true"]
+    
     photo_paths = [os.path.join(tmp_path, f"photo_{i}.jpg") for i in range(len(photo_urls))]
 
     # Выполняем тестируемую функцию

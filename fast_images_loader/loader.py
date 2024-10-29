@@ -1,19 +1,19 @@
 import asyncio
 import os
-
 import aiohttp
 from tqdm.asyncio import tqdm
-
 from loguru import logger
-import nest_asyncio
 import argparse
 
-nest_asyncio.apply()
+try:
+    get_ipython
+    import nest_asyncio
+    nest_asyncio.apply()
+except NameError:
+    pass
 
 class PhotoLoader:
-    def __init__(self, folder):
-        self.folder = folder
-        os.makedirs(self.folder, exist_ok=True)
+    def __init__(self):
         self.counter = 0
 
     async def request(self, session, photo_url, photo_path):
@@ -32,32 +32,40 @@ class PhotoLoader:
 
 
 class FastImagesLoader:
+    def __init__(self, batch_size=10):
+        self.batch_size = batch_size
 
-    @staticmethod
-    async def load_photos_from_bucket(photo_urls, photo_paths, data_folder: str) -> None:
-        basket = PhotoLoader(data_folder)
-        async with aiohttp.ClientSession() as session:
-            tasks = [basket.request(session, photo_url, photo_path) for photo_url, photo_path in zip(photo_urls, photo_paths)]
-            for f in tqdm.as_completed(tasks):
-                await f
+    async def _load_photos_from_bucket(self, session, photo_urls, photo_paths, data_folder: str) -> None:
+        basket = PhotoLoader()
+        tasks = [basket.request(session, photo_url, photo_path) for photo_url, photo_path in zip(photo_urls, photo_paths)]
+        await asyncio.gather(*tasks)
 
-    def get_photos(self, photo_paths: list[tuple[str, str]], data_folder: str) -> list[object]:
-        logger.info(f"Loading {len(photo_paths)} photos")
-        asyncio.run(self.load_photos_from_bucket(photo_paths, data_folder))
+    def load_photos_to_folder(self, photo_urls: list[str], photo_paths: list[str], data_folder: str) -> list[object]:
+        os.makedirs(data_folder, exist_ok=True)
+        logger.info(f"Loading {len(photo_paths)} photos in batches of {self.batch_size}")
+        async def run_batches():
+            async with aiohttp.ClientSession() as session:
+                for i in tqdm(range(0, len(photo_urls), self.batch_size), desc="Downloading photos"):
+                    batch_urls = photo_urls[i:i + self.batch_size]
+                    batch_paths = photo_paths[i:i + self.batch_size]
+                    await self._load_photos_from_bucket(session, batch_urls, batch_paths, data_folder)
+        asyncio.run(run_batches())
 
 
 def main():
     parser = argparse.ArgumentParser(description="Load photos from URLs to a specified folder.")
     parser.add_argument("photo_urls", type=str, nargs='+', help="List of photo URLs to download.")
     parser.add_argument("data_folder", type=str, help="Folder to save downloaded photos.")
+    parser.add_argument("--batch_size", type=int, default=10, help="Number of photos to download in each batch. Default is 10.")
     args = parser.parse_args()
 
     photo_urls = args.photo_urls
     data_folder = args.data_folder
+    batch_size = args.batch_size
     photo_paths = [os.path.join(data_folder, f"photo_{i}.jpg") for i in range(len(photo_urls))]
 
-    client_basket = ClientBasket()
-    client_basket.get_photos(photo_paths, photo_urls, data_folder)
+    client_basket = FastImagesLoader(batch_size=batch_size)
+    client_basket.load_photos_to_folder(photo_urls, photo_paths, data_folder)
 
 
 if __name__ == "__main__":
