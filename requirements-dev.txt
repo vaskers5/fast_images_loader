@@ -4,3 +4,5 @@ loguru
 nest_asyncio
 opencv-python
 aiofiles
+pytest
+pytest-asyncio
